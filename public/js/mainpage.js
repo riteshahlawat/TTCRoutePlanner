@@ -3,7 +3,6 @@ class Cards extends React.Component {
     super(props);
   }
   state = {
-    appending: false,
     amountToLoad: 10,
     routeList: []
   };
@@ -11,12 +10,13 @@ class Cards extends React.Component {
     this.updateRoutes();
     this.infiscroll();
   }
-  componentDidUpdate() {}
+  componentDidUpdate() {
+  }
   updateRoutes = () => {
-    this.setState({ appending: true });
+    document.querySelectorAll(".loading")[0].style.display = "block";
     axios.get("/api/getAllRoutes/" + this.state.amountToLoad).then(response => {
       this.setState({ routeList: response.data });
-      this.setState({ appending: false });
+      document.querySelectorAll(".loading")[0].style.display = "none";
     });
   };
   infiscroll = () => {
@@ -26,14 +26,19 @@ class Cards extends React.Component {
     });
   };
   render() {
-    if (this.state.appending == true) {
-      return <h1 className="centered">Loading..</h1>;
-    } else {
-      return this.state.routeList.map((route, index) => (
-        <Card busName={this.state.routeList[index].$.title} />
-      ));
+    // if (this.state.appending == true) {
+    //   return <h1 className="centered">Loading..</h1>;
+    // } else {
+      return (
+        <div>
+          {this.state.routeList.map((route, index) => (
+            <Card busName={this.state.routeList[index].$.title} />
+          ))}
+          <h1 className="loading">Loading..</h1>
+        </div>
+      );
     }
-  }
+//   }
 }
 class Card extends React.Component {
   constructor(props) {
