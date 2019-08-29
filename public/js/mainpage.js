@@ -1,38 +1,38 @@
-
-var loaded = false;
-
 class Cards extends React.Component {
   constructor(props) {
     super(props);
   }
   state = {
-    routeList : []
+    appending: false,
+    amountToLoad: 10,
+    routeList: []
   };
   componentDidMount() {
-    axios.get("/api/getAllRoutes").then(response => {
-        this.setState({routeList : response.data});
-        // var resp = response.data;
-        // for (let i = 0; i < resp.length; i++) {
-        //   console.log(resp[i].$.title);
-        // }
-      });
+    this.updateRoutes();
+    this.infiscroll();
   }
-  componentDidUpdate() {
-    loaded = true;
-    console.log(this.state.routeList);
-  }
+  componentDidUpdate() {}
+  updateRoutes = () => {
+    this.setState({ appending: true });
+    axios.get("/api/getAllRoutes/" + this.state.amountToLoad).then(response => {
+      this.setState({ routeList: response.data });
+      this.setState({ appending: false });
+    });
+  };
+  infiscroll = () => {
+    document.getElementById("test-button").addEventListener("click", e => {
+      this.setState({ amountToLoad: this.state.amountToLoad + 5 });
+      this.updateRoutes();
+    });
+  };
   render() {
-      if(this.state.routeList.length==0) {
-        return (<h1 className="centered">Loading..</h1>);
-      }
-      else {
-        return this.state.routeList.map((route, index) => (
-           <Card 
-           busName={this.state.routeList[index].$.title}
-           /> 
-        ));
-      }
-      
+    if (this.state.appending == true) {
+      return <h1 className="centered">Loading..</h1>;
+    } else {
+      return this.state.routeList.map((route, index) => (
+        <Card busName={this.state.routeList[index].$.title} />
+      ));
+    }
   }
 }
 class Card extends React.Component {
@@ -52,4 +52,11 @@ class Card extends React.Component {
   }
 }
 
-ReactDOM.render(<Cards />, document.getElementById("container"));
+ReactDOM.render(
+  <Cards
+    ref={cardsComponent => {
+      window.cardsComponent = cardsComponent;
+    }}
+  />,
+  document.getElementById("container")
+);
