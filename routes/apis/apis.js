@@ -7,6 +7,7 @@ router.get("/getAllRoutes", (req, res) => {
     axios.get("http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=ttc")
         .then(response => {
             parseString(response.data, (err, results) => {
+                
                 res.send(results.body.route);
             });
         });
