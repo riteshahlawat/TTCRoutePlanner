@@ -17,6 +17,8 @@ app.use(
       extensions: ["html"]
     })
 );
+// APIS
+app.use("/api", require("./routes/apis/apis"));
 
 const PORT = process.env.PORT || 5000;
 
