@@ -47,9 +47,6 @@ body {
     display: flex;
     justify-content: center;
 }
-.mediator-container {
-    
-}
 .card {
     width: 600px;
     height: 150px;
