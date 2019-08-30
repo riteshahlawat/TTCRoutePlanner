@@ -1,3 +1,5 @@
+var allowLoad = true;
+
 class Cards extends React.Component {
   constructor(props) {
     super(props);
@@ -8,37 +10,51 @@ class Cards extends React.Component {
   };
   componentDidMount() {
     this.updateRoutes();
-    this.infiscroll();
+    window.addEventListener("scroll", this.listenToScroll);
   }
-  componentDidUpdate() {
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.listenToScroll);
   }
+  componentDidUpdate() {}
   updateRoutes = () => {
-    document.querySelectorAll(".loading")[0].style.display = "block";
+    allowLoad = false;
+    document.querySelectorAll(".loader")[0].style.visibility = "visible";
     axios.get("/api/getAllRoutes/" + this.state.amountToLoad).then(response => {
       this.setState({ routeList: response.data });
-      document.querySelectorAll(".loading")[0].style.display = "none";
+      document.querySelectorAll(".loader")[0].style.visibility = "hidden";
+      // Allow to fetch more data once data has loaded
+      allowLoad = true;
     });
   };
-  infiscroll = () => {
-    document.getElementById("test-button").addEventListener("click", e => {
-      this.setState({ amountToLoad: this.state.amountToLoad + 5 });
-      this.updateRoutes();
-    });
+
+  listenToScroll = () => {
+    var cardHeight =
+      parseInt(getComputedStyle(document.querySelector(".card")).height, 10) +
+      parseInt(getComputedStyle(document.querySelector(".card")).marginTop, 10);
+    var loaderHeight = parseInt(
+      getComputedStyle(document.querySelector(".loader")).height, 10) + 
+      parseInt(getComputedStyle(document.querySelector(".loader")).marginTop, 10);
+    var changedHeight =
+      this.state.routeList.length * cardHeight - window.scrollY;
+    // If at bottom with allowLoad to debounce
+    if (changedHeight < innerHeight + loaderHeight && allowLoad) {
+      this.loadData();
+    }
+  };
+  loadData = () => {
+    this.setState({ amountToLoad: this.state.amountToLoad + 5 });
+    this.updateRoutes();
   };
   render() {
-    // if (this.state.appending == true) {
-    //   return <h1 className="centered">Loading..</h1>;
-    // } else {
-      return (
-        <div>
-          {this.state.routeList.map((route, index) => (
-            <Card busName={this.state.routeList[index].$.title} />
-          ))}
-          <h1 className="loading">Loading..</h1>
-        </div>
-      );
-    }
-//   }
+    return (
+      <div class="mediator-container">
+        {this.state.routeList.map((route, index) => (
+          <Card busName={this.state.routeList[index].$.title} />
+        ))}
+        <span class="loader"><span class="loader-inner"></span></span>
+      </div>
+    );
+  }
 }
 class Card extends React.Component {
   constructor(props) {
