@@ -1,12 +1,12 @@
 var allowLoad = true;
-
 class Cards extends React.Component {
   constructor(props) {
     super(props);
   }
   state = {
     amountToLoad: 10,
-    routeList: []
+    routeList: [],
+    routeConfig: []
   };
   componentDidMount() {
     this.updateRoutes();
@@ -16,11 +16,30 @@ class Cards extends React.Component {
     window.removeEventListener("scroll", this.listenToScroll);
   }
   componentDidUpdate() {}
+  // Used to fetch the data to update the component states
   updateRoutes = () => {
     allowLoad = false;
     document.querySelectorAll(".loader")[0].style.visibility = "visible";
+    // Route List state updater
     axios.get("/api/getAllRoutes/" + this.state.amountToLoad).then(response => {
       this.setState({ routeList: response.data });
+      
+      // Iterate through the routeList and get it's actual directional name
+      for(let i = 0; i < this.state.routeList.length; i++) {
+        // Tag of each bus route
+        var element = this.state.routeList[i].$.tag;
+        axios.get("/api/getRouteConfiguration/" + element + "?stopsOnly=false").then(configResponse => {
+          let busTag = "" + this.state.routeList[i].$.tag;
+          let busRouteConfiguration = {};
+          // This temporary object contains a bus tag's individual bus directions
+          busRouteConfiguration[busTag] = configResponse.data;
+          // Push it to the routeconfig
+          this.setState({routeConfig: [...this.state.routeConfig, busRouteConfiguration]});
+          console.log(this.state.routeConfig);
+        });
+      }
+      
+
       document.querySelectorAll(".loader")[0].style.visibility = "hidden";
       // Allow to fetch more data once data has loaded
       allowLoad = true;
@@ -42,15 +61,20 @@ class Cards extends React.Component {
     }
   };
   loadData = () => {
-    this.setState({ amountToLoad: this.state.amountToLoad + 5 });
+    this.setState((state, props) => {
+      state.amountToLoad+=5;
+    });
     this.updateRoutes();
   };
   render() {
     return (
       <div class="mediator-container">
-        {this.state.routeList.map((route, index) => (
+        {this.state.routeList.map((route, index) => 
           <Card busName={this.state.routeList[index].$.title} />
-        ))}
+          // {
+          //   this.state
+          // }
+        )}
         <span class="loader"><span class="loader-inner"></span></span>
       </div>
     );
