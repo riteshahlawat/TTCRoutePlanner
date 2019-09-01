@@ -39,6 +39,7 @@ body {
     font-family: champagne;
     src: url(../fonts/champagne.ttf) format("truetype");
 }
+
 #container {
     width: 100%;
     height: 100%;
@@ -74,13 +75,15 @@ body {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     background-color: var(--cardHeaderColor);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 .bus-name p {
     font-family: champagne;
     font-weight: 600;
-    font-size: 25px;
-    letter-spacing: 0.1em;
-    word-spacing: 0.2em;
+    font-size: 18px;
     padding-left: 15px;
 }
 @media (hover:none), (max-width: 768px) {
