@@ -18,5 +18,8 @@
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "xml2js": "^0.4.19"
+  },
+  "nodemonConfig": {
+    "ignore": ["*.json"]
   }
 }
