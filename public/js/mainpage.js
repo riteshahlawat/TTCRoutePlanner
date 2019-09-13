@@ -1,4 +1,5 @@
 var allowLoad = true;
+var configIterations = 0;
 class Cards extends React.Component {
   constructor(props) {
     super(props);
@@ -28,10 +29,8 @@ class Cards extends React.Component {
         var value = Object.values(route)[0];
         value.map((config, configIndex) => {
           // update route config list
-          // TODO: Increase performance by not going through the indexes
-          // Which have already been done
+          // TODO: Make it not to push ones that already exist
           this.setState({ routeConfig: [...this.state.routeConfig, config.$] });
-          console.log(this.state.routeConfig);
         });
       });
       document.querySelectorAll(".loader")[0].style.visibility = "hidden";
@@ -91,7 +90,6 @@ class Card extends React.Component {
   }
   render() {
     // Logging to see if render method is called
-    console.log("Ran");
     return (
       <div className="card">
         <div className="card-header">
